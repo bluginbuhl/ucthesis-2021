@@ -5,8 +5,9 @@
 \documentclass[oneside,12pt,final]{styles/ucthesis-CA2021}
 
 % PACKAGES
+% \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[lofdepth,lotdepth,caption=false]{subfig}
+% \usepackage[lofdepth,lotdepth,caption=false]{subfig}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{amsmath, amssymb, graphicx}
@@ -36,14 +37,14 @@
 % frontmatter
 \begin{frontmatter}
     % TODO: try to implement manifest method
-    \input{content/frontmatter/title.tex}
+    \input{content/frontmatter/title}
     \maketitlepage
     \makeapprovalpage
     \makecopyrightpage
-    \input{content/frontmatter/dedication.tex}
+    \input{content/frontmatter/dedication}
     \makededicationpage
     \makeacknowledgements
-    % TODO: \input{content/vitae}
+    \input{content/frontmatter/vitae}
     % TODO: \input{content/abstract}
     % TODO: \tableofcontents
 \end{frontmatter}

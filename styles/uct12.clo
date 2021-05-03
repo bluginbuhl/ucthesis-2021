@@ -346,7 +346,7 @@
     \labelwidth\leftmarginii\advance\labelwidth-\labelsep
     \topsep 2.5\p@ plus\p@ minus\p@
     \parsep \z@ \partopsep \p@ plus\z@ minus\p@
-    \itemep \topsep
+    \itemsep \topsep
 }
 
 \def\@listiv{

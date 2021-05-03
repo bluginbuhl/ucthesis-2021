@@ -302,7 +302,27 @@
 
 % CURRICULUM VITAE
 
-% TODO: def environment for vitae and make function
+% define environment for vitae
+\newenvironment{vitae}{%
+    \if@openright \cleardoublepage \else \clearpage \fi
+    \ssp
+    \begin{center}
+        {\large \bfseries \vitaename} \par
+        {\large \@author}
+    \end{center}
+    \begin{list}{}{\leftmargin 0in \itemsep 0.2in}}{\end{list}}{\par\vfil\null}
+
+\newcommand{\vitaelabels}[1]{#1 \hfil}
+
+\newenvironment{vitaesection}[1]{
+    \item {\bfseries #1}
+    \begin{list}{}{
+        \leftmargin 1.5in
+        \labelwidth 1.3in
+        \labelsep 0.2in
+        \parsep 0in
+        \let\makelabel\vitaelabels
+    }}{\end{list}}
 
 % ==============================================================================
 % |                             TABLE OF CONTENTS                              |
