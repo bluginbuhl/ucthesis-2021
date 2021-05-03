@@ -1,0 +1,55 @@
+% ==============================================================================
+% |                                 PREAMBLE                                   |
+% ==============================================================================
+
+\documentclass[oneside,12pt,final]{styles/ucthesis-CA2021}
+
+% PACKAGES
+\usepackage[T1]{fontenc}
+\usepackage[lofdepth,lotdepth,caption=false]{subfig}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{amsmath, amssymb, graphicx}
+\usepackage{xspace}
+\usepackage{color}
+\usepackage{setspace}
+
+
+% MARGINS
+\setlength\oddsidemargin{0.25 in}
+\setlength\evensidemargin{0.25 in}
+\setlength\textwidth{6.25 in}
+\setlength\textheight{8.50 in}
+\setlength\footskip{0.25 in}
+\setlength\topmargin{0 in}
+\setlength\headheight{0.25 in}
+\setlength\headsep{0.25 in}
+
+
+% ==============================================================================
+% |                               DOCUMENT START                               |
+% ==============================================================================
+
+% begin the document
+\begin{document}
+
+% frontmatter
+\begin{frontmatter}
+    % TODO: try to implement manifest method
+    \input{content/frontmatter/title.tex}
+    \maketitlepage
+    \makeapprovalpage
+    \makecopyrightpage
+    \input{content/frontmatter/dedication.tex}
+    \makededicationpage
+    \makeacknowledgements
+    % TODO: \input{content/vitae}
+    % TODO: \input{content/abstract}
+    % TODO: \tableofcontents
+\end{frontmatter}
+
+% TODO: add all mainmatter styling to ucthesis-CA2021.cls
+% \begin{mainmatter}
+% \end{mainmatter}
+
+\end{document}
