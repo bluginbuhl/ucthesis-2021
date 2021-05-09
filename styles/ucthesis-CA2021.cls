@@ -1,9 +1,26 @@
+% ==============================================================================
+% Document Class for ucthesis-CA2021
+%
+% Released 2021 Apr 30
+% author: Benjamin R. Luginbuhl
+%
+% modified from previous versions by:
+%    Chris Martin
+%    Mathias Kolsch
+%    Jerry Leichter
+%    Curtis Asplund
+%    ... and probably others.
+% ==============================================================================
+
+
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{styles/ucthesis-CA2021}
 
 % ==============================================================================
 % |                                   OPTIONS                                  |
 % ==============================================================================
+
+% options: Xpt [X=12], final/draft, oneside/twoside
 
 \newcommand\@ptsize{}
 \newcommand\@draftmark{}
@@ -33,7 +50,7 @@
 \ExecuteOptions{12pt,oneside,final}
 \ProcessOptions
 
-% choose the font size, default=12
+% choose the font size
 \input styles/uct1\@ptsize.clo\relax
 
 % definitions
@@ -69,19 +86,44 @@
 
 \def\thepage {\roman{page}}
 
-% one-sided printing
-\def\ps@headings{
-    \def\@oddfoot{\rm\hfil\thepage\hfil}
-    \def\@oddhead{{\slshape\rightmark}\hfil}
-    \let\@mkboth\markboth
-    \def\chaptermark##1{
-        \markright {\MakeUppercase{
-            \ifnum \c@secnumdepth >\m@ne
-                \if@mainmatter
-                    \@chapapp\ \thechapter. \ 
+\if@twoside
+  \def\ps@headings{
+        \def\@oddfoot{\rm\hfil\thepage\hfil}
+        \def\@evenfoot{\rm\hfil\thepage\hfil}
+        \def\@evenhead{\hfil\slshape\leftmark}%
+        \def\@oddhead{{\slshape\rightmark}\hfil}%
+        \let\@mkboth\markboth
+        \def\chaptermark##1{%
+            \markboth {\MakeUppercase{%
+                \ifnum \c@secnumdepth >\m@ne
+                    \if@mainmatter
+                        \@chapapp\ \thechapter. \ %
+                    \fi
                 \fi
-            \fi
-        ##1}}}}
+                ##1
+                    }
+                }{}
+        }%
+        \def\sectionmark##1{%
+            \markright {\MakeUppercase{%
+                \ifnum \c@secnumdepth >\z@
+                    \thesection. \ %
+                \fi
+                ##1}}}}
+\else
+    \def\ps@headings{%
+        \def\@oddfoot{\rm\hfil\thepage\hfil}
+        \def\@oddhead{{\slshape\rightmark}\hfil}%
+        \let\@mkboth\markboth
+        \def\chaptermark##1{%
+            \markright {\MakeUppercase{%
+                \ifnum \c@secnumdepth >\m@ne
+                    \if@mainmatter
+                        \@chapapp\ \thechapter. \ %
+                    \fi
+                \fi
+                ##1}}}}
+\fi
 
 % "plain" page style
 \def\ps@plain{\let\@mkboth\markboth
@@ -126,9 +168,8 @@
 \def\fmsmallfont{\fontsize\@xiipt{14pt}\selectfont}
 
 \newenvironment{frontmatter}{
-    \renewcommand{\thepage}{\roman{page}}
+    \renewcommand{\thepage}{\roman{page}}\setcounter{page}{1}
     {\pagestyle{plain}}
-    {\newpage\renewcommand{\thepage}{\arabic{page}}\setcounter{page}{1}}
     \pagenumbering{roman}
 }{}
 
@@ -295,7 +336,7 @@
             {\large \bfseries \acknowledgename}
         \end{center}
         % {\dsp {\@acknowledgementstext}}
-        \input{content/frontmatter/acknowledgements.tex}
+        \input content/frontmatter/acknowledgements.tex 
     \end{acknowledgements}
 }
 
@@ -308,8 +349,8 @@
     \ssp
     \begin{center}
         {\large \bfseries \vitaename} \par
-        {\large \@author}
-    \end{center}
+        {\small \@author}
+    \end{center}\hfil
     \begin{list}{}{\leftmargin 0in \itemsep 0.2in}}{\end{list}}{\par\vfil\null}
 
 \newcommand{\vitaelabels}[1]{#1 \hfil}
@@ -324,17 +365,134 @@
         \let\makelabel\vitaelabels
     }}{\end{list}}
 
+
+% ABSTRACT
+
+% define environment for abstract
+\newenvironment{abstract}{%
+    \if@openright \cleardoublepage \else \clearpage \fi
+    \begin{center}
+        {\fmfont {\bfseries \abstractname}\par
+        \vspace{0.3in}
+        \@title\par
+        \vspace{0.1in}by\par
+        \vspace{0.1in}\@author\par
+        }
+    \end{center}
+    \hfil
+    \dsp
+}{\par\vfil\null}
+
 % ==============================================================================
 % |                             TABLE OF CONTENTS                              |
 % ==============================================================================
 
+% variables
+\newif\if@restonecol
+\def\@pnumwidth{1.55em}
+\def\@tocrmarg{2.55em}
+\def\@dotsep{4.5}
+\setcounter{tocdepth}{2}
 
+\def\tableofcontents{
+    \@restonecolfalse
+    \if@twocolumn
+        \@restonecoltrue\onecolumn
+    \fi
+    \chapter*{
+        \contentsname
+        \@mkboth{\uppercase{\contentsname}}
+        {\uppercase{\contentsname}}
+    }%
+    {\ssp\@starttoc{toc}}
+    \if@restonecol
+        \twocolumn
+    \fi
+}
+
+\def\l@part#1#2{
+    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em plus\p@}
+    \begingroup
+    \@tempdima 3em
+    \parindent \z@ \rightskip \@pnumwidth 
+    \parfillskip -\@pnumwidth
+    {\large \bfseries
+        \leavevmode
+        #1\hfil \hbox to\@pnumwidth{\hss #2}
+    }\par
+    \nobreak
+    \global\@nobreaktrue
+    \everypar{
+        \global\@nobreakfalse\everypar{}
+    }
+   \endgroup
+}
+
+\def\l@chapter#1#2{
+    \addpenalty{-\@highpenalty}%
+    \vskip 1.0em plus\p@   % space above chapter line
+    \@tempdima 1.5em       % width of box holding chapter number
+    \begingroup
+        \parindent \z@ \rightskip \@pnumwidth
+        \parfillskip -\@pnumwidth
+        \bfseries
+        \leavevmode          
+        \advance\leftskip\@tempdima
+        \hskip -\leftskip
+        #1\nobreak\hfil \nobreak\hbox to\@pnumwidth{\hss #2}\par
+        \penalty\@highpenalty
+    \endgroup
+}
+
+\def\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
+\def\l@subsection{\@dottedtocline{2}{3.8em}{3.2em}}
+\def\l@subsubsection{\@dottedtocline{3}{7.0em}{4.1em}}
+\def\l@paragraph{\@dottedtocline{4}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{5}{12em}{6em}}
+
+% LIST OF FIGURES
+\def\listoffigures{
+    \@restonecolfalse
+    \if@twocolumn\@restonecoltrue\onecolumn\fi
+    \chapter*{
+        \listfigurename\@mkboth{\uppercase{\listfigurename}}%
+        {\uppercase{\listfigurename}}
+    }
+    \addcontentsline{toc}{chapter}{\listfigurename}
+    {\ssp\@starttoc{lof}}
+    \if@restonecol\twocolumn\fi
+}
+
+\def\l@figure{\@dottedtocline{1}{1.5em}{2.3em}}
+
+% LIST OF TABLES
+
+\def\listoftables{
+    \@restonecolfalse
+    \if@twocolumn\@restonecoltrue\onecolumn\fi
+    \chapter*{
+        \listtablename\@mkboth{\uppercase{\listtablename}}%
+        {\uppercase{\listtablename}}
+    }
+    \addcontentsline{toc}{chapter}{\listtablename}
+    {\ssp\@starttoc{lot}}
+    \if@restonecol\twocolumn\fi
+}
+
+\let\l@table\l@figure
 
 % ==============================================================================
 % |                                 MAINMATTER                                 |
 % ==============================================================================
 
-
+\newenvironment{mainmatter}{%
+    \if@openright\cleardoublepage \else\clearpage\fi
+    \dsp
+    \pagestyle{headings}
+    \setcounter{page}{1}
+    \pagenumbering{arabic}
+}{}
 
 % ==============================================================================
 % |                           CHAPTERS & SECTIONS                              |
@@ -347,6 +505,84 @@
 \newcounter {subsubsection}[subsection]
 \newcounter {paragraph}[subsubsection]
 \newcounter {subparagraph}[paragraph]
+
+% CHAPTERS
+\renewcommand\chapter{
+    \if@openright\cleardoublepage \else\clearpage \fi
+    \thispagestyle{plain}
+    \global\@topnum\z@
+    \@afterindentfalse
+    \secdef\@chapter\@schapter
+}
+
+% redefine startsection so there is always indentation
+\def\@startsection#1#2#3#4#5#6{
+    \if@noskipsec \leavevmode \fi
+    \par \@tempskipa #4\relax
+    \@afterindenttrue
+    \ifdim \@tempskipa <\z@ \@tempskipa -\@tempskipa \relax\fi
+    \if@nobreak
+        \everypar{}
+    \else
+        \addpenalty{\@secpenalty}\addvspace{\@tempskipa}
+    \fi
+    \@ifstar
+    {\@ssect{#3}{#4}{#5}{#6}}
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+
+% redefine @sect
+\def\@sect#1#2#3#4#5#6[#7]#8{
+    \ifnum #2>\c@secnumdepth
+        \let@svsec\@empty
+    \else
+        \refstepcounter{#1}%
+        \let\@@protect\protect
+        \def\protect{
+            \noexpand
+            \protect
+            \noexpand
+        }%
+        \edef\@svsec{
+            \@seccntformat{#1}
+        }%
+        \let\protect\@@protect
+    \fi
+    \@tempskipa #5\relax
+    \ifdim \@tempskipa>\z@
+        \begingroup #6\relax
+        \@hangfrom{
+            \hskip #3\relax\@svsec
+        }{\interlinepenalty \@M #8\par}
+        \endgroup
+        \csname #1mark\endcsname{#7}\addcontentsline{toc}{#1}{
+            \ifnum #2>\c@secnumdepth
+            \else
+                \protect
+                \numberline{
+                    \csname the#1\endcsname
+                }
+            \fi
+            #8
+        }
+    \else
+        \def\@svsechd{
+            #6\hskip #3\relax
+            \@svsec #8\csname #1mark\endcsname
+            {#7}\addcontentsline{toc}{#1}{
+                \ifnum #2>\c@secnumdepth
+                \else
+                    \protect
+                    \numberline{
+                        \csname the#1\endcsname
+                    }%
+                \fi
+                #8
+            }
+        }
+    \fi
+    \@xsect{#5}
+}
 
 % macros for counters
 \def\thepart          {\Roman{part}}
@@ -364,10 +600,94 @@
 % define part counter
 \newcounter {part}
 
+\def\part{\cleardoublepage
+    \thispagestyle{plain}
+    \if@twocolumn
+        \onecolumn
+        \@tempswatrue
+    \else
+        \@tempswafalse
+    \fi
+    \hbox{}\vfil
+    \secdef\@part\@spart
+}
+
+\def\@part[#1]#2{
+    \ifnum \c@secnumdepth >-2\relax
+        \refstepcounter{part}
+        \addcontentsline{toc}{part}{\partname~\thepart}
+        \hspace{1em}#1
+    \else
+        \addcontentsline{toc}{part}{#1}
+    \fi
+    \markboth{}{}
+    {\centering
+        \interlinepenalty \@M
+        \ifnum \c@secnumdepth >-2\relax
+            \huge\bfseries \parname~\thepart
+            \par
+            \vskip 20\p@
+        \fi
+        \Huge \bfseries #2\par
+    }\@endpart
+}
+
+\def\@endpart{
+    \vfil\newpage
+    \if@twoside
+        \hbox{}
+        \thispagestyle{empty}
+        \newpage
+    \fi
+    \if@tempswa
+        \twocolumn
+    \fi
+}
+
 
 % ==============================================================================
 % |                              FIGURES & TABLES                              |
 % ==============================================================================
+
+\setcounter{topnumber}{2}
+\def\topfraction{0.7}
+\setcounter{bottomnumber}{1}
+\def\bottomfraction{0.3}
+\setcounter{totalnumber}{3}
+\def\textfraction{0.2}
+\def\floatpagefraction{0.5}
+\setcounter{dbltopnumber}{2}
+\def\dbltopfraction{0.7}
+\def\dblfloatpagefraction{0.5}
+
+\newlength\abovecaptionskip
+\newlength\belowcaptionskip
+\setlength\abovecaptionskip{10\p@}
+\setlength\belowcaptionskip{0\p@}
+
+% define makecaption macro
+% TODO: fix page break on large captions
+\long\def\@makecaption#1#2{
+    \vskip\abovecaptionskip
+    \sbox\@tempboxa{
+        \smallssp 
+        \bfseries{#1}: 
+        \normalfont{#2}
+    }
+    \ifdim \wd\@tempboxa >\hsize
+        \hbox to\hsize{
+            {\parbox{0.9\textwidth}
+                {\smallssp\unhbox\@tempboxa\hfil}
+            }
+        }
+    \else
+        \hbox to\hsize{
+            \box\@tempboxa\hfil
+        }
+    \fi
+    \vskip\belowcaptionskip
+}
+
 
 % FIGURES
 
@@ -404,16 +724,149 @@
 \@namedef{table*}{\@dblfloat{table}}
 \@namedef{endtable*}{\end@dblfloat}
 
+\arraycolsep 5pt
+\tabcolsep 6pt
+\arrayrulewidth 0.4pt
+\doublerulesep 2pt
+
+\def\array{
+    \let\@acol\@arrayacol
+    \let\@classz\@arrayclassz
+    \let\@classiv\@arrayclassiv
+    \let\\\@arraycr\let\@halignto\@empty\@tabarray
+}
+
+% TABBING
+\tabbingsep \labelsep
+
+\def\tabular{
+    \par
+    \ssp
+    \let\@halignto\@empty\@tabular
+}
+
+\expandafter \def\csname tabular*\endcsname #1%
+
+{\par\ssp\def\@halignto{to#1}\@tabular}
+
 
 % ==============================================================================
 % |                                 FOOTNOTES                                  |
 % ==============================================================================
 
+\def\footnoterule{
+    \kern-3\@p
+    \hrule width 0.4\columnwidth
+    \kern 2.5\p@
+}
 
+\@addtoreset{footnote}{chapter}
+
+\long\def\@makefntext#1{
+    \parindent 1em
+    \noindent
+    \hbox to 1.8em
+    {\hss$\m@th^{\@thefnmark}$}
+    #1
+}
+
+\long\def\@footnotetext#1{
+    \insert
+    \footins{
+        \ssp
+        \reset@font
+        \footnotesize
+        \splittopskip
+        \footnotesep
+        \splitmaxdepth
+        \dp\strutbox
+        \floatingpenalty
+        \@MM
+        \hsize
+        \columnwidth
+        \@parboxrestore
+        \edef\@currentlabel{
+            \csname p@footnote
+            \endcsname
+            \@thefnmark
+        }
+        \@makefntext
+        {\rule{\z@}{\footnotesep}
+        \ignorespaces
+        #1
+        \strut
+        }
+    }
+}
 
 % ==============================================================================
 % |                                   LISTS                                    |
 % ==============================================================================
+
+% TODO: clean this up
+\if@twocolumn
+  \setlength\leftmargini  {2em}
+\else
+  \setlength\leftmargini  {2.5em}
+\fi
+\leftmargin  \leftmargini
+\setlength\leftmarginii  {2.2em}
+\setlength\leftmarginiii {1.87em}
+\setlength\leftmarginiv  {1.7em}
+\if@twocolumn
+  \setlength\leftmarginv  {.5em}
+  \setlength\leftmarginvi {.5em}
+\else
+  \setlength\leftmarginv  {1em}
+  \setlength\leftmarginvi {1em}
+\fi
+\setlength  \labelsep  {.5em}
+\setlength  \labelwidth{\leftmargini}
+\addtolength\labelwidth{-\labelsep}
+\@beginparpenalty -\@lowpenalty
+\@endparpenalty   -\@lowpenalty
+\@itempenalty     -\@lowpenalty
+\renewcommand\theenumi{\@arabic\c@enumi}
+\renewcommand\theenumii{\@alph\c@enumii}
+\renewcommand\theenumiii{\@roman\c@enumiii}
+\renewcommand\theenumiv{\@Alph\c@enumiv}
+\newcommand\labelenumi{\theenumi.}
+\newcommand\labelenumii{(\theenumii)}
+\newcommand\labelenumiii{\theenumiii.}
+\newcommand\labelenumiv{\theenumiv.}
+\renewcommand\p@enumii{\theenumi}
+\renewcommand\p@enumiii{\theenumi(\theenumii)}
+\renewcommand\p@enumiv{\p@enumiii\theenumiii}
+\newcommand\labelitemi{\textbullet}
+\newcommand\labelitemii{\normalfont\bfseries \textendash}
+\newcommand\labelitemiii{\textasteriskcentered}
+\newcommand\labelitemiv{\textperiodcentered}
+
+
+% define description environment
+\newenvironment{description}{
+    \list{}{
+        \labelwidth\z@ \itemindent-\leftmargin
+        \let\makelabel\descriptionlabel
+        }
+    }
+    {\endlist}
+
+\newcommand*\descriptionlabel[1]{
+    \hspace\labelsep
+    \normalfont
+    \bfseries #1
+}
+
+% define quotation environment
+\newenvironment{quotation}{
+    \list{}{
+        \listparindent 1.5em
+        \itemindent\listparindent
+        \rightmargin\leftmargin
+        \parsep\z@ \@plus\p@
+    }\item\relax}
+    {\endlist}
 
 % define quote environment
 \newenvironment {quote}
@@ -424,13 +877,55 @@
 % |                               BIBLIOGRAPHY                                 |
 % ==============================================================================
 
+\def\thebibliography#1{
+    \chapter*{
+        \bibname\@mkboth{
+            \uppercase{
+                \bibname
+            }
+        }
+        {\uppercase{\bibname}}
+    }
+    \list{
+        \@biblabel{
+            \arabic{enumiv}
+        }
+    }
+    {\settowidth\labelwidth{\@biblabel{#1}}
+        \leftmargin\labelwidth
+        \advance\leftmargin\labelsep
+        \usecounter{enumiv}
+        \let\p@enumiv\@empty
+        \def\theenumiv{
+            \arabic{enumiv}
+        }
+    }
+    \def\newblock{
+        \hskip 0.11em plus 0.33em minus 0.07em
+    }
+    \sloppy\clubpenalty4000\widowpenalty4000
+    \sfcode`\.=\@m
+    \ssp
+}
 
+\def\endthebibliography{
+    \def\@noitemerr{
+        \@warning{Empty 'thebibiolography' environment}
+    }
+    \endlist
+    \dsp
+}
 
 % ==============================================================================
 % |                               MISCELLANEOUS                                |
 % ==============================================================================
 
+% reset equation counter with each chapter
+\@addtoreset{equation}{chapter}
 
+\def\theequation{
+    \thechapter.\arabic{equation}
+}
 
 % ==============================================================================
 % |                              INITIALIZATION                                |

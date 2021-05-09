@@ -4,7 +4,12 @@
 % Released 2021 Apr 30
 % author: Benjamin R. Luginbuhl
 %
-% modified from previous versions by Chris Martin and Mathias Kolsch
+% modified from previous versions by:
+%    Chris Martin
+%    Mathias Kolsch
+%    Jerry Leichter
+%    Curtis Asplund
+%    ... and probably others.
 % ==============================================================================
 
 % ==============================================================================
@@ -146,18 +151,25 @@
     \vspace*{50\p@}
     {\ssp \parindent \z@ \raggedright
         \ifnum \c@secnumdepth >\m@ne
-            \huge\bf\@chapapp{}\thechapter
+            \Large\bf\@chapapp{} \thechapter  % chapter heading
             \par
             \vskip 20\p@
         \fi
-        \huge\bf
-        #1\par
+        \Huge \bf #1\par  % chapter title
         \nobreak
         \vskip 40\p@
     }
 }
 
-% TODO: original file has a redundant \def for makechapterhead here
+% makeschapterhead (for \chapter* command)
+\def\@makeschapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \raggedright 
+        \large \bf #1\par
+        \nobreak
+        \vskip 40\p@
+    }
+}
 
 \def\clearchapterdoublepage{
     \clearpage
@@ -169,7 +181,7 @@
             \thispagestyle{plain}
             \hbox{}
             \newpage
-            \if@twocolumn  % TODO: check if necessary
+            \if@twocolumn
                 \hbox{}
                 \newpage
             \fi
@@ -180,46 +192,40 @@
 \def\chapter{
     \clearchapterdoublepage
     \thispagestyle{plain}
-    \global\@topnum\z@  % prevents figures from being at top of page
-    \@afterindenttrue   % TODO: {suppress indent in first paragraph}
+    \global\@topnum\z@   % prevents figures from being at top of page
+    \@afterindenttrue
     \secdef\@chapter\@schapter
 }
 
+% TODO: suppress chapter heading for ToC
 \def\@chapter[#1]#2{
     \ifnum \c@secnumdepth >\m@ne
-        \refstepcounter{chapter}
-        \typeout{
-            \@chapapp\space\thechapter.
-        }
-        \addcontentsline{toc}{chapter}{
-            \protect
-            \numberline{
-                \thechapter
-            }#2
-        \else
-            \addcontentsline{toc}{chapter}{#2}
-        }
+        \refstepcounter{chapter}%
+        \typeout{\@chapapp\space\thechapter.}%
+        \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#2}
+    \else
+      \addcontentsline{toc}{chapter}{#2}
     \fi
-    \chaptermark{#1}
-    \addtocontents{lof}{
-        \protect
-        \addvspace{10\p@}
-    }
-    \addtocontents{lot}{
-        \protect
-        \addvspace{10\@p}
-    }
-    % TODO: insert two-column mode if necessary
+    \chaptermark{#1}%
+    \addtocontents{lof}%
+       {\protect\addvspace{10\p@}}
+    \addtocontents{lot}%
+       {\protect\addvspace{10\p@}}
+    \if@twocolumn 
+        \@topnewpage[\@makechapterhead{#2}]%
+    \else 
+        \@makechapterhead{#2}%
+        \@afterheading
+     \fi
 }
+
 
 \def\@schapter#1{
     \if@twocolumn
-        \@topnewpage[
-            \@makechapterhead{#1}
-        ]
+        \@topnewpage[\@makechapterhead{#1}]
     \else
-        \@makechaperhead{#1}
-        \afterheading
+        \@makechapterhead{#1}%
+        \@afterheading
     \fi
 }
 
@@ -268,14 +274,14 @@
 }
 
 \def\paragraph{
-    \@startsection {paragraph}{4}{\z@}
+    \@startsection{paragraph}{4}{\z@}
         {3.25ex plus 1ex minus 0.2ex}
         {-1em}
         {\reset@font\normalsize\bf}
 }
 
 \def\subparagraph{
-    \@startsection {subparagraph}{4}{\parindent}
+    \@startsection{subparagraph}{4}{\parindent}
         {3.25ex plus 1ex minus 0.2ex}
         {-1em}
         {\reset@font\normalsize\bf}
@@ -344,6 +350,13 @@
 \def\@listii{
     \leftmargin\leftmarginii
     \labelwidth\leftmarginii\advance\labelwidth-\labelsep
+    \topsep 2.5\p@ plus\p@ minus\p@
+    \parsep \z@ \partopsep \p@ plus\z@ minus\p@
+    \itemsep \topsep
+}
+
+\def\@listiii{
+    \leftmargin\leftmarginiii\advance\labelwidth-\labelsep
     \topsep 2.5\p@ plus\p@ minus\p@
     \parsep \z@ \partopsep \p@ plus\z@ minus\p@
     \itemsep \topsep

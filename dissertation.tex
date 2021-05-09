@@ -7,7 +7,7 @@
 % PACKAGES
 % \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-% \usepackage[lofdepth,lotdepth,caption=false]{subfig}
+\usepackage[lofdepth,lotdepth,caption=false]{subfig}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{amsmath, amssymb, graphicx}
@@ -45,12 +45,22 @@
     \makededicationpage
     \makeacknowledgements
     \input{content/frontmatter/vitae}
-    % TODO: \input{content/abstract}
-    % TODO: \tableofcontents
+    \input{content/frontmatter/abstract}
+    \tableofcontents
+    \listoffigures
+    \listoftables
 \end{frontmatter}
 
 % TODO: add all mainmatter styling to ucthesis-CA2021.cls
-% \begin{mainmatter}
-% \end{mainmatter}
+\begin{mainmatter}
+
+    % set up headers and footers
+    \input{styles/mainmatter.tex}
+
+    % Chapter Contents
+    \input{content/mainmatter/chapter1/chapter1.tex}
+    \input{content/mainmatter/chapter2/chapter2.tex}
+
+\end{mainmatter}
 
 \end{document}
