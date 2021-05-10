@@ -11,9 +11,17 @@
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{amsmath, amssymb, graphicx}
+\usepackage{booktabs}
 \usepackage{xspace}
 \usepackage{color}
 \usepackage{setspace}
+
+% TODO: setup for natbib and chapterbib
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+}
 
 
 % MARGINS
@@ -61,6 +69,16 @@
     \input{content/mainmatter/chapter1/chapter1.tex}
     \input{content/mainmatter/chapter2/chapter2.tex}
 
+    % Appendices
+    \appendix
+    \input{content/appendices/appendixA/appendixA.tex}
+
 \end{mainmatter}
+
+% bibliography
+\ssp
+\bibliographystyle{abbrv}
+\bibliography{dissertation}
+% \printbibliography[heading=bibintoc]
 
 \end{document}

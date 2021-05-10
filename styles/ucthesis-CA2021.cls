@@ -392,7 +392,7 @@
 \def\@pnumwidth{1.55em}
 \def\@tocrmarg{2.55em}
 \def\@dotsep{4.5}
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{1}
 
 \def\tableofcontents{
     \@restonecolfalse
@@ -593,6 +593,23 @@
 \def\theparagraph     {\thesubsubsection.\arabic{paragraph}}
 \def\thesubparagraph  {\theparagraph.\arabic{subparagraph}}
 
+
+% APPENDICES
+\renewcommand\appendix{
+    \par
+    \setcounter{chapter}{0}
+    \setcounter{section}{0}
+    \def\@chapapp{\appendixname}
+    \def\thechapter{\@Alph\c@chapter}
+    \ssp
+}
+
+\newcommand{\appendixoff}{
+    \def\thesection{
+        \thechapter.\arabic{section}
+    }
+}
+
 % ==============================================================================
 % |                                   PART                                     |
 % ==============================================================================
@@ -741,7 +758,7 @@
 
 \def\tabular{
     \par
-    \ssp
+    \dsp
     \let\@halignto\@empty\@tabular
 }
 
